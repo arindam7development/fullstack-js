@@ -1,7 +1,8 @@
 let express = require('express')
+let mongodb = require('mongodb')
+let sanitizeHTML = require('sanitize-html')
 let app = express()
 let db
-let mongodb = require('mongodb')
 let connectionString = 'mongodb+srv://todoAppUser:todo777@cluster0-esgid.mongodb.net/TodoApp?retryWrites=true&w=majority'
 mongodb.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client) {
   db = client.db()
@@ -49,7 +50,8 @@ app.get('/', function(req, res){
 })
 
 app.post('/create-item', function(req, res) {
-  db.collection('items').insertOne({text: req.body.text}, function(err, info) {
+  let safeText = sanitizeHTML(req.body.text, {allowedTags: [], allowedAttributes: {}})
+  db.collection('items').insertOne({text: safeText}, function(err, info) {
     res.json(info.ops[0])
   })
 })
@@ -57,7 +59,8 @@ app.post('/create-item', function(req, res) {
 app.post('/update-item', function(req, res) {
   console.log(req.body.id)
   console.log(req.body.text)
-  db.collection('items').findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id)}, {$set: {text: req.body.text}}, function() {
+  let safeText = sanitizeHTML(req.body.text, {allowedTags: [], allowedAttributes: {}})
+  db.collection('items').findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id)}, {$set: {text: safeText}}, function() {
     res.send("Success")
   })
 })
