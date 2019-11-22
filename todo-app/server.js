@@ -7,7 +7,7 @@ let port = process.env.PORT
 if (port == null || port == "") {
   port = 3000
 }
-let connectionString = 'mongodb+srv://todoAppUser:todo777@cluster0-esgid.mongodb.net/TodoApp?retryWrites=true&w=majority'
+let connectionString = 'mongodb+srv://abcd:******@cluster*-****.mongodb.net/TodoApp?retryWrites=true&w=majority'
 mongodb.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client) {
   db = client.db()
   app.listen(port)
