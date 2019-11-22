@@ -55,18 +55,24 @@ app.get('/', function(req, res){
 
 app.post('/create-item', function(req, res) {
   let safeText = sanitizeHTML(req.body.text, {allowedTags: [], allowedAttributes: {}})
-  db.collection('items').insertOne({text: safeText}, function(err, info) {
-    res.json(info.ops[0])
-  })
+  console.log('safetext')
+  console.log(typeof safeText)
+  if(!(/^\s*$/.test(safeText))){
+    db.collection('items').insertOne({text: safeText}, function(err, info) {
+      res.json(info.ops[0])
+    })
+  }
 })
 
 app.post('/update-item', function(req, res) {
   console.log(req.body.id)
   console.log(req.body.text)
   let safeText = sanitizeHTML(req.body.text, {allowedTags: [], allowedAttributes: {}})
-  db.collection('items').findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id)}, {$set: {text: safeText}}, function() {
-    res.send("Success")
-  })
+  if(!(/^\s*$/.test(safeText))){
+    db.collection('items').findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id)}, {$set: {text: safeText}}, function() {
+      res.send("Success")
+    })
+  }
 })
 
 app.post('/delete-item', function(req, res) {
